@@ -1,0 +1,128 @@
+.order-invoice {
+  width: 70%;
+  margin-left: 15%;
+}
+.invoice {
+  width: 100%;
+}#in1{
+  width:200px;
+}.logo{
+  text-align: center;
+}#in2{
+    border-top: 1px solid #5d6975;
+  border-bottom: 1px solid #5d6975;
+  color: #5d6975;
+  font-size: 2.4em;
+  line-height: 1.4em;
+  font-weight: normal;
+  text-align: center;
+  margin: 0 0 20px 0;
+  background: url(../../../public/images/dimension.png);
+}#in3{
+  font-size:1.1em;
+}#in4{
+  color:grey;
+  padding-left:1vw;
+}#in5{
+  text-align: right;
+  padding-right: 2vw;
+}.tableIn{
+  display: table;
+  width: 98%;
+  margin-left:1%;
+  border-collapse: collapse;
+  background-color: #fff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1); /* subtle shadow */
+  overflow: hidden;
+  font-family: Arial, sans-serif;
+  margin-top:5vh;
+  margin-bottom: 3vh;
+}#in6{
+  border-top:1px #F0F0F0 solid;
+  padding-top:10px;
+  padding-bottom:10px;
+}#in14{
+    border-top:1px #F0F0F0 solid;
+  padding-top:10px;
+  padding-bottom:10px;
+   white-space: nowrap;  
+}#in8{
+  border-top:1px #F0F0F0 solid;
+  padding-top:10px;
+  padding-bottom:10px;
+  padding-left:20px;
+}#in12{
+   border-top:1px #F0F0F0 solid;
+  padding-top:10px;
+  padding-bottom:10px;
+  padding-left:20px;
+}#in9{
+  border-top:2px #F0F0F0 solid;
+  padding-top:10px;
+  padding-bottom:10px;
+  text-align: right;
+}#in15{
+    border-top:2px #F0F0F0 solid;
+  padding-top:10px;
+  padding-bottom:10px;
+  text-align: center;
+}#in16{
+   border-top:1px black solid;
+  padding-top:10px;
+  padding-bottom:10px;
+  text-align: center;
+}#in10{
+  border-top:1px black solid;
+  padding-top:10px;
+  padding-bottom:10px;
+  text-align: right;
+}#in7{
+  background-color: #5d6975;
+  color:white;
+}#in11{
+    color: #5d6975;
+  width: 100%;
+  border-top: 1px solid #c1ced9;
+  margin: 8px 0;
+  padding: 8px 0;
+  text-align: center;
+}#in0{
+  margin:5vh 0;
+  margin-left:25%;
+  width:50%;
+}
+@media(max-width:600px){
+  .order-invoice{
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }.tableIn{
+    font-size: 0.8rem;
+  }#in0{
+    width:70%;
+    margin-left:15%;
+  }#in15{
+    text-align: right;
+  }
+  #in16{
+    text-align: right;
+  }
+  #in3{
+    font-size:0.9rem;
+  }#in2{
+    font-size:1.6rem;
+  }#in5{
+    padding-right:4vw;
+  }#in1{
+    height:150px;
+    width:150px;
+  }#in12{
+    font-size:0.65rem;
+    padding-left: 13px;
+  }
+}
+@media(max-width:430px){
+  #in3{
+    font-size: 0.7rem;
+  }
+}
