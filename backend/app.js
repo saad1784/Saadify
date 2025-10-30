@@ -4,6 +4,7 @@ import { connectDatabase } from './config/db.js';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
 // Load env vars
 dotenv.config({ path: './config/config.env' });
@@ -27,12 +28,16 @@ app.use('/api', router);
 app.use('/api', routerP);
 app.use('/api', routerO);
 
+// ESM-friendly __dirname
+const __filename = fileURLToPath(import.meta.url);
+const _dirname = path.dirname(_filename);
+
 // Serve frontend (only in production)
-const __dirname = path.resolve();
-if (process.env.NODE_ENV === "PRODUCTION") {
-  app.use(express.static(path.join(__dirname, "frontend/build")));
-  app.get("*", (req, res) => {
-    res.sendFile(path.resolve(__dirname, "frontend", "build", "index.html"));
+if ((process.env.NODE_ENV || '').toLowerCase() === 'production') {
+  app.use(express.static(path.join(__dirname, 'frontend', 'build')));
+  // v6-safe catch-all:
+  app.get('/(.*)', (req, res) => {
+    res.sendFile(path.resolve(__dirname, 'frontend', 'build', 'index.html'));
   });
 }
 
@@ -44,5 +49,5 @@ app.get('/', (req, res) => {
 // Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`✅ Server started on port ${PORT}`);
+  console.log(`✅ Server started on port ${PORT}`);
 });
