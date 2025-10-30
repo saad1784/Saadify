@@ -15,7 +15,11 @@ const app = express();
 
 // Middleware
 app.use(cookieParser());
-app.use(cors());
+app.use(cors({
+  origin: 'https://saadify.vercel.app', // your deployed frontend URL
+  credentials: true,                    // allow cookies
+  methods: ['GET', 'POST', 'PUT', 'DELETE']
+}));
 app.use(express.json({ limit: '10mb' }));
 
 // Routes
