@@ -26,7 +26,9 @@ app.use('/api', routerO);
 
 
 
-
+app.get('/', (req, res) => {
+  res.send('Backend API is live on Railway 🚀');
+});
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, '0.0.0.0', () => {
