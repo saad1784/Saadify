@@ -16,6 +16,13 @@ app.use(cookieParser());
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 
+import path from "path";
+const __dirname = path.resolve();
+app.use(express.static(path.join(__dirname, "frontend/build")));
+app.get("*", (req, res) => {
+  res.sendFile(path.resolve(__dirname, "frontend", "build", "index.html"));
+});
+
 import router from './routes/userR.js';
 import routerP from './routes/productR.js';
 import routerO from './routes/orderR.js';

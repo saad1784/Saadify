@@ -3,8 +3,9 @@ import {userApi} from "../api/userApi.js";
 
 export const authApi =createApi({
     reducerPath:"authApi",
-    baseQuery: fetchBaseQuery({
-  baseUrl: "/api",
+ baseQuery: fetchBaseQuery({
+  baseUrl: process.env.REACT_APP_API_URL,
+  credentials: "include",
 }),
     endpoints:(builder) => ({
     

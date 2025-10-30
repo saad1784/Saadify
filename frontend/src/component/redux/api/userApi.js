@@ -3,9 +3,10 @@ import {createApi,fetchBaseQuery} from "@reduxjs/toolkit/query/react";
 
 export const userApi = createApi({
   reducerPath: "userApi",
-  baseQuery: fetchBaseQuery({ 
-baseUrl: "/api",
-  }),
+baseQuery: fetchBaseQuery({
+  baseUrl: process.env.REACT_APP_API_URL,
+  credentials: "include",
+}),
   keepUnusedDataFor: 30,
   tagTypes:["User","AdminUsers","AdminUser"],
   endpoints: (builder) => ({
