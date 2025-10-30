@@ -993,6 +993,13 @@ margin-top:2vh;
   align-items: center;      /* vertical center */
   box-sizing: border-box; 
   color:grey; 
+}#ij{
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  max-height: 80px; /* stop text after roughly 80px */
+  text-overflow: ellipsis;
+  line-height: 1.5;
 }#ij:hover{
 text-decoration: underline;
 }
