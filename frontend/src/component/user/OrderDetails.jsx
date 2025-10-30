@@ -124,7 +124,7 @@ const OrderDetails=()=>{
                 </div>
                 <div class="col col-md-3"  id="l23">
            <Link to={`/product/${item?.product}`}>
-            <span id="ij">{item?.name?.length > 25 ? item.name.slice(0, 25) + "..." : item.name}</span></Link>
+            <span id="ij">{item?.name}</span></Link>
                 </div>
                  <div class="col col-md-3" id="o7">
                     <p>Rs {item?.price}</p>
