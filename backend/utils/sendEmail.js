@@ -1,43 +1,42 @@
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 import dotenv from "dotenv";
 import path from "path";
+import fs from "fs";
 
 dotenv.config();
 
+// Initialize Resend with API key
+const resend = new Resend(process.env.RESEND_API_KEY);
+
 export const sendEmail = async ({ to, subject, html }) => {
   try {
-    const transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
-      port: 587,
-      secure: false, // use TLS
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
-
-    // Attach image ONLY if the email template contains "cid:cropImage"
+    // Optional image attachment (if used in your email templates)
     const attachments = [];
     if (html.includes("cid:cropImage")) {
-      attachments.push({
-        filename: "logo.jpg",
-        path: path.join("backend/assets/logo.jpg"), // adjust if your folder differs
-        cid: "cropImage", // must match <img src="cid:cropImage">
-      });
+      const imagePath = path.join("backend/assets/logo.jpg");
+      if (fs.existsSync(imagePath)) {
+        const imageBuffer = fs.readFileSync(imagePath);
+        attachments.push({
+          filename: "logo.jpg",
+          content: imageBuffer,
+          content_id: "cropImage", // must match <img src="cid:cropImage">
+        });
+      }
     }
 
-    const info = await transporter.sendMail({
-      from: `"Saadify" <${process.env.EMAIL_USER}>`,
+    // Send email via Resend
+    const info = await resend.emails.send({
+      from: process.env.FROM_EMAIL || "Saadify",
       to,
       subject,
       html,
       attachments,
     });
 
-    console.log("✅ Email sent:", info.messageId);
+    console.log("✅ Email sent via Resend:", info?.id || info);
     return info;
   } catch (err) {
-    console.error("❌ sendEmail error:", err);
+    console.error("❌ sendEmail error (Resend):", err);
     throw err;
   }
 };
