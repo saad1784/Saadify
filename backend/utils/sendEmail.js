@@ -24,9 +24,8 @@ export const sendEmail = async ({ to, subject, html }) => {
       }
     }
 
-    // ✅ Use verified Resend sender (free tier ready)
     const info = await resend.emails.send({
-      from: process.env.FROM_EMAIL || "Saadify <onboarding@resend.dev>", // ✅ Verified sender
+      from: process.env.FROM_EMAIL || "Saadify <onboarding@resend.dev>", 
       to, // user email
       subject,
       html,
