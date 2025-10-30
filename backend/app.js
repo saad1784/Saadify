@@ -30,7 +30,7 @@ app.use('/api', routerO);
 
 // ESM-friendly __dirname
 const __filename = fileURLToPath(import.meta.url);
-const _dirname = path.dirname(_filename);
+const __dirname = path.dirname(__filename);
 
 // Serve frontend (only in production)
 if ((process.env.NODE_ENV || '').toLowerCase() === 'production') {
