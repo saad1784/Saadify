@@ -994,12 +994,15 @@ margin-top:2vh;
   box-sizing: border-box; 
   color:grey; 
 }#ij{
-  display: -webkit-box;
+  display: box; /* fallback for older syntax */
+  display: -webkit-box; /* for WebKit browsers */
+  box-orient: vertical;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  max-height: 80px; /* stop text after roughly 80px */
   text-overflow: ellipsis;
-  line-height: 1.5;
+  white-space: normal;
+  line-clamp: 3; /* standard property */
+  -webkit-line-clamp: 3; /* WebKit specific */
 }#ij:hover{
 text-decoration: underline;
 }
