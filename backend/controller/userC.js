@@ -134,14 +134,18 @@ sendToken(user, 200, res);
   
 };
 
-export const logOut=async(req,res,next)=>{
-    res.cookie("token",null,{
-expires:new Date(Date.now()),
-httpOnly:true
-    });
-    res.status(200).json({
-        message:"Logged out"
-    });
+export const logOut = async (req, res, next) => {
+  res.cookie("token", "", {
+    expires: new Date(0),
+    httpOnly: true,
+    sameSite: "None",  // ✅ needed for cross-site cookies
+    secure: true,      // ✅ required if using HTTPS (Vercel + Railway are HTTPS)
+  });
+
+  res.status(200).json({
+    success: true,
+    message: "Logged out successfully",
+  });
 };
 
 
