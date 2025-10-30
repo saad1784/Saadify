@@ -5,33 +5,24 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import path from 'path';
 
-// Load environment variables
+// Load env vars
 dotenv.config({ path: './config/config.env' });
 
-// Connect to database
+// Connect to DB
 connectDatabase();
 
 const app = express();
 
-// ✅ Middleware
+// Middleware
 app.use(cookieParser());
+app.use(cors({
+  origin: 'https://saadify.vercel.app', // your deployed frontend URL
+  credentials: true,                    // allow cookies
+  methods: ['GET', 'POST', 'PUT', 'DELETE']
+}));
 app.use(express.json({ limit: '10mb' }));
 
-// ✅ Fix CORS (only your frontend)
-app.use(
-  cors({
-    origin: ['https://saadify.vercel.app'], // your frontend
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  })
-);
-
-// ✅ Quick health check route (must be FAST)
-app.get('/', (req, res) => {
-  res.status(200).send('✅ Backend API is live and healthy 🚀');
-});
-
-// ✅ Import routes
+// Routes
 import router from './routes/userR.js';
 import routerP from './routes/productR.js';
 import routerO from './routes/orderR.js';
@@ -40,21 +31,22 @@ app.use('/api', router);
 app.use('/api', routerP);
 app.use('/api', routerO);
 
-// ✅ Serve frontend if you ever want full-stack deploy
+// Serve frontend (only in production)
 const __dirname = path.resolve();
-if (process.env.NODE_ENV === 'PRODUCTION') {
-  app.use(express.static(path.join(__dirname, 'frontend/build')));
-  app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, 'frontend', 'build', 'index.html'));
+if (process.env.NODE_ENV === "PRODUCTION") {
+  app.use(express.static(path.join(__dirname, "frontend/build")));
+  app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "frontend", "build", "index.html"));
   });
 }
 
-// ✅ Start server
-const PORT = process.env.PORT || 5000;
+// Health check route
+app.get('/', (req, res) => {
+  res.send('Backend API is live on Railway 🚀');
+});
 
-// Small delay ensures DB + server ready before Railway checks health
-setTimeout(() => {
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`✅ Server started and listening on port ${PORT}`);
-  });
-}, 3000); // 3-second delay helps prevent Railway 502 errors
+// Start server
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`✅ Server started on port ${PORT}`);
+});
