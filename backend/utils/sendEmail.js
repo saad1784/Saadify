@@ -11,15 +11,15 @@ export const sendEmail = async ({ to, subject, html }) => {
     // ✅ Replace cid references with hosted image URL
     const processedHtml = html.replace(
       /cid:cropImage/g,
-      "https://saadify-production.up.railway.app/api/assets/logo.png"
+      "https://saadify.vercel.app/logo.png"
     );
 
     const info = await resend.emails.send({
       from: process.env.FROM_EMAIL || "Saadify <onboarding@resend.dev>",
-      to, // user's email
+      to,
       subject,
-      html: processedHtml, // ✅ updated HTML with hosted image
-      reply_to: "kanwalsamra8@gmail.com", // for replies
+      html: processedHtml,
+      reply_to: "sh3738905@gmail.com",
     });
 
     console.log("✅ Email sent to user:", to, "→ ID:", info?.id || info);
