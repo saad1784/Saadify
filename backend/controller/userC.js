@@ -39,9 +39,9 @@ export const registerUser = async (req, res) => {
     const message =getEmailVerificationTemplate(verificationCode);
 
     await sendEmail({
-      to: email,
+      email,
       subject: "Your Verification Code",
-      html: message,
+      message,
     });
 
     res.status(201).json({ success: true, message: "Verification code sent to email." });
