@@ -11,7 +11,7 @@ export const sendEmail = async ({ to, subject, html }) => {
     // ✅ Replace cid references with hosted image URL
     const processedHtml = html.replace(
       /cid:cropImage/g,
-      "https://saadify.vercel.app/logo.png"
+      "https://saadify.vercel.app/logo.jpg"
     );
 
     const info = await resend.emails.send({
