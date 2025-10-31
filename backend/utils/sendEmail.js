@@ -1,7 +1,5 @@
 import { Resend } from "resend";
 import dotenv from "dotenv";
-import path from "path";
-import fs from "fs";
 
 dotenv.config();
 
@@ -10,27 +8,18 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 export const sendEmail = async ({ to, subject, html }) => {
   try {
-    // Optional image attachment
-    const attachments = [];
-    if (html.includes("cid:cropImage")) {
-      const imagePath = path.join("backend/assets/logo.jpg");
-      if (fs.existsSync(imagePath)) {
-        const imageBuffer = fs.readFileSync(imagePath);
-        attachments.push({
-          filename: "logo.jpg",
-          content: imageBuffer,
-          content_id: "cropImage",
-        });
-      }
-    }
+    // ✅ Replace cid references with hosted image URL
+    const processedHtml = html.replace(
+      /cid:cropImage/g,
+      "https://saadify-production.up.railway.app/api/assets/logo.png"
+    );
 
     const info = await resend.emails.send({
-      from: process.env.FROM_EMAIL || "Saadify <onboarding@resend.dev>", 
-      to, // user email
+      from: process.env.FROM_EMAIL || "Saadify <onboarding@resend.dev>",
+      to, // user's email
       subject,
-      html,
-      attachments,
-      reply_to: "kanwalsamra8@gmail.com", // ✅ so user replies go to you
+      html: processedHtml, // ✅ updated HTML with hosted image
+      reply_to: "kanwalsamra8@gmail.com", // for replies
     });
 
     console.log("✅ Email sent to user:", to, "→ ID:", info?.id || info);
