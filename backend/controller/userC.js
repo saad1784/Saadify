@@ -35,15 +35,11 @@ export const registerUser = async (req, res) => {
       codeExpire: Date.now() + 10 * 60 * 1000,
     });
 
-    console.log("📧 Preparing email for:", email);
-    const html = getEmailVerificationTemplate(verificationCode);
-
-    console.log("🚀 Sending email via sendEmail...");
-    const info = await sendEmail({
-      to: email,
-      subject: "Your Verification Code",
-      html,
-    });
+  await sendEmail({
+  to: email,
+  subject: "Your Verification Code",
+  html: getEmailVerificationTemplate(verificationCode),
+});
 
     console.log("✅ Email sent successfully:", info);
 
