@@ -9,83 +9,95 @@ import { getEmailVerificationTemplate } from '../utils/emailVerificationTemplate
 import { getResetPasswordTemplate } from '../utils/emailTemplate.js';
 
 export const registerUser = async (req, res) => {
-  console.log("📥 Incoming request to /register:", req.body);
-
   try {
     const { first, last, email, password } = req.body;
 
     if (!first || !last || !email || !password) {
-      console.log("⚠️ Missing fields");
-      return res.status(400).json({ success: false, message: "All fields are required." });
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required.",
+      });
     }
 
+    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Generate verification code
     const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
 
-    console.log("🧹 Cleaning old pending users...");
+    // Remove old pending users
     await PendingUser.deleteMany({ email });
 
-    console.log("🆕 Creating pending user...");
-    const pending = await PendingUser.create({
+    // Create pending user
+    await PendingUser.create({
       first,
       last,
       email,
       password: hashedPassword,
       code: verificationCode,
-      codeExpire: Date.now() + 10 * 60 * 1000,
+      codeExpire: Date.now() + 10 * 60 * 1000, // 10 minutes
     });
 
-  await sendEmail({
-  to: email,
-  subject: "Your Verification Code",
-  html: getEmailVerificationTemplate(verificationCode),
-});
+    // Send email via Resend
+    const message = getEmailVerificationTemplate(verificationCode);
 
-    console.log("✅ Email sent successfully:", info);
+    await sendEmail({
+      to: email, // ✅ Resend requires `to`, not `email`
+      subject: "Your Verification Code",
+      html: message, // ✅ Use html instead of message
+    });
 
-    return res.status(201).json({ success: true, message: "Verification code sent to email." });
+    console.log("✅ Email sent successfully to:", email);
 
+    res.status(201).json({
+      success: true,
+      message: "Verification code sent to email.",
+    });
   } catch (err) {
     console.error("❌ Register error full:", err);
-    return res.status(500).json({ success: false, message: "Server error." });
+    res.status(500).json({
+      success: false,
+      message: err.message,
+      stack: err.stack,
+    });
   }
 };
 
-
 export const verifyRegistration = async (req, res) => {
   try {
-    // Require both email and code for verification
-    const { email, code } = req.body;
-    if (!email || !code) {
-      return res.status(400).json({ success: false, message: "Email and code are required." });
-    }
+    const { code } = req.body;
 
-    // Find pending user by email + code and ensure code not expired
     const pendingUser = await PendingUser.findOne({
-      email,
       code,
       codeExpire: { $gt: Date.now() },
     });
 
     if (!pendingUser) {
-      return res.status(400).json({ success: false, message: "Invalid or expired verification code." });
+      return res.status(400).json({
+        success: false,
+        message: "Invalid or expired verification code",
+      });
     }
 
-    // Create final user (ensure unique email constraint in User model)
-    await User.create({
+    const user = await User.create({
       first: pendingUser.first,
       last: pendingUser.last,
       email: pendingUser.email,
-      password: pendingUser.password, // already hashed
+      password: pendingUser.password,
     });
 
-    // Remove the pending entry
     await PendingUser.deleteOne({ _id: pendingUser._id });
 
-    return res.status(200).json({ success: true, message: "User registered successfully." });
+    res.status(200).json({
+      success: true,
+      message: "User registered successfully!",
+    });
   } catch (err) {
-    console.error("Verification error:", err);
-    return res.status(500).json({ success: false, message: "Server error." });
+    console.error("❌ Verification error:", err);
+    res.status(500).json({
+      success: false,
+      message: "Verification failed.",
+    });
   }
 };
 
