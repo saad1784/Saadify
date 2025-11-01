@@ -8,64 +8,53 @@ import { delete_file, upload_file } from '../utils/cloudinary.js';
 import { getEmailVerificationTemplate } from '../utils/emailVerificationTemplate.js';
 import { getResetPasswordTemplate } from '../utils/emailTemplate.js';
 
-// Assumes: bcrypt, PendingUser, User, sendEmail, getEmailVerificationTemplate are imported
-
 export const registerUser = async (req, res) => {
+  console.log("📥 Incoming request to /register:", req.body);
+
   try {
     const { first, last, email, password } = req.body;
 
     if (!first || !last || !email || !password) {
+      console.log("⚠️ Missing fields");
       return res.status(400).json({ success: false, message: "All fields are required." });
     }
 
-    // (Optional) Basic email/password validation here (regex, min length, etc.)
-
-    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Generate verification code (6 digits)
     const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
 
-    // Remove old pending entries for this email (keep only one pending)
+    console.log("🧹 Cleaning old pending users...");
     await PendingUser.deleteMany({ email });
 
-    // Create pending user
+    console.log("🆕 Creating pending user...");
     const pending = await PendingUser.create({
       first,
       last,
       email,
       password: hashedPassword,
       code: verificationCode,
-      codeExpire: Date.now() + 10 * 60 * 1000, // 10 minutes
+      codeExpire: Date.now() + 10 * 60 * 1000,
     });
 
-    // Prepare email HTML (use your template fn)
+    console.log("📧 Preparing email for:", email);
     const html = getEmailVerificationTemplate(verificationCode);
 
-    // Send email — ensure sendEmail expects { to, subject, html }
-    try {
-      await sendEmail({
-        to: email,
-        subject: "Your Verification Code",
-        html,
-      });
+    console.log("🚀 Sending email via sendEmail...");
+    const info = await sendEmail({
+      to: email,
+      subject: "Your Verification Code",
+      html,
+    });
 
-      return res.status(201).json({ success: true, message: "Verification code sent to email." });
-    } catch (sendErr) {
-      // If sending fails, remove the pending user to avoid orphan entries
-      try {
-        await PendingUser.deleteOne({ _id: pending._id });
-      } catch (delErr) {
-        console.error("Failed to delete pending user after send error:", delErr);
-      }
-      console.error("Email send failed:", sendErr);
-      return res.status(500).json({ success: false, message: "Failed to send verification email." });
-    }
+    console.log("✅ Email sent successfully:", info);
+
+    return res.status(201).json({ success: true, message: "Verification code sent to email." });
+
   } catch (err) {
-    console.error("Register error:", err);
+    console.error("❌ Register error full:", err);
     return res.status(500).json({ success: false, message: "Server error." });
   }
 };
+
 
 export const verifyRegistration = async (req, res) => {
   try {
