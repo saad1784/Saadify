@@ -1,31 +1,36 @@
-import { Resend } from "resend";
+// sendEmail.js
+import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 
 dotenv.config();
 
-// Initialize Resend
-const resend = new Resend(process.env.RESEND_API_KEY);
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
 
 export const sendEmail = async ({ to, subject, html }) => {
   try {
-    // ✅ Replace cid references with hosted image URL
-    const processedHtml = html.replace(
+    const processedHtml = (html || "").replace(
       /cid:cropImage/g,
       "https://saadify.vercel.app/logo.jpg"
     );
 
-    const info = await resend.emails.send({
-      from: process.env.FROM_EMAIL || "Saadify <onboarding@resend.dev>",
+    const info = await transporter.sendMail({
+      from: process.env.FROM_EMAIL || `"Saadify" <${process.env.EMAIL_USER}>`,
       to,
       subject,
       html: processedHtml,
-      reply_to: "sh3738905@gmail.com",
+      replyTo: process.env.EMAIL_USER,
     });
 
-    console.log("✅ Email sent to user:", to, "→ ID:", info?.id || info);
+    console.log("✅ Email sent:", to, "messageId:", info.messageId || info);
     return info;
   } catch (err) {
-    console.error("❌ sendEmail error (Resend):", err);
+    console.error("❌ sendEmail error (Gmail SMTP):", err);
     throw err;
   }
 };

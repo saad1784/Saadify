@@ -8,6 +8,8 @@ import { delete_file, upload_file } from '../utils/cloudinary.js';
 import { getEmailVerificationTemplate } from '../utils/emailVerificationTemplate.js';
 import { getResetPasswordTemplate } from '../utils/emailTemplate.js';
 
+// Assumes: bcrypt, PendingUser, User, sendEmail, getEmailVerificationTemplate are imported
+
 export const registerUser = async (req, res) => {
   try {
     const { first, last, email, password } = req.body;
@@ -16,17 +18,19 @@ export const registerUser = async (req, res) => {
       return res.status(400).json({ success: false, message: "All fields are required." });
     }
 
+    // (Optional) Basic email/password validation here (regex, min length, etc.)
+
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Generate verification code
+    // Generate verification code (6 digits)
     const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
 
-    // Remove old pending users
+    // Remove old pending entries for this email (keep only one pending)
     await PendingUser.deleteMany({ email });
 
     // Create pending user
-    await PendingUser.create({
+    const pending = await PendingUser.create({
       first,
       last,
       email,
@@ -35,57 +39,68 @@ export const registerUser = async (req, res) => {
       codeExpire: Date.now() + 10 * 60 * 1000, // 10 minutes
     });
 
-    // Send email
-    const message =getEmailVerificationTemplate(verificationCode);
+    // Prepare email HTML (use your template fn)
+    const html = getEmailVerificationTemplate(verificationCode);
 
-    await sendEmail({
-      email,
-      subject: "Your Verification Code",
-      message,
-    });
+    // Send email — ensure sendEmail expects { to, subject, html }
+    try {
+      await sendEmail({
+        to: email,
+        subject: "Your Verification Code",
+        html,
+      });
 
-    res.status(201).json({ success: true, message: "Verification code sent to email." });
+      return res.status(201).json({ success: true, message: "Verification code sent to email." });
+    } catch (sendErr) {
+      // If sending fails, remove the pending user to avoid orphan entries
+      try {
+        await PendingUser.deleteOne({ _id: pending._id });
+      } catch (delErr) {
+        console.error("Failed to delete pending user after send error:", delErr);
+      }
+      console.error("Email send failed:", sendErr);
+      return res.status(500).json({ success: false, message: "Failed to send verification email." });
+    }
   } catch (err) {
-    console.error("❌ Register error full:", err);
-    res.status(500).json({
-      success: false,
-      message: err.message,
-      stack: err.stack,
-    });
+    console.error("Register error:", err);
+    return res.status(500).json({ success: false, message: "Server error." });
   }
 };
+
 export const verifyRegistration = async (req, res) => {
   try {
-    const { code } = req.body;
+    // Require both email and code for verification
+    const { email, code } = req.body;
+    if (!email || !code) {
+      return res.status(400).json({ success: false, message: "Email and code are required." });
+    }
 
+    // Find pending user by email + code and ensure code not expired
     const pendingUser = await PendingUser.findOne({
+      email,
       code,
       codeExpire: { $gt: Date.now() },
     });
 
     if (!pendingUser) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid or expired verification code",
-      });
+      return res.status(400).json({ success: false, message: "Invalid or expired verification code." });
     }
 
-    const user = await User.create({
+    // Create final user (ensure unique email constraint in User model)
+    await User.create({
       first: pendingUser.first,
       last: pendingUser.last,
       email: pendingUser.email,
-      password: pendingUser.password, 
+      password: pendingUser.password, // already hashed
     });
 
+    // Remove the pending entry
     await PendingUser.deleteOne({ _id: pendingUser._id });
 
-    res.status(200).json({
-      success: true,
-      message: "User registered successfully!",
-    });
+    return res.status(200).json({ success: true, message: "User registered successfully." });
   } catch (err) {
-    console.error("❌ Verification error:", err);
-    res.status(500).json({ success: false, message: "Verification failed." });
+    console.error("Verification error:", err);
+    return res.status(500).json({ success: false, message: "Server error." });
   }
 };
 
