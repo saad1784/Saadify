@@ -159,9 +159,12 @@ const Header=()=>{
   {wishlistItems?.length}
 </span> Wishlist</Link>
           </li>
-           <li class="nav-item" id="li">
+          {user && (
+<li class="nav-item" id="li">
             <Link class="nav-link" id="colour" to="" onClick={logoutHandler}><i class="bi bi-box-arrow-left fs-4"  id="space"></i> Logout</Link>
           </li>
+          )}
+           
         </ul>
       </div>
     </div>
