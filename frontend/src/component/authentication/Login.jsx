@@ -59,7 +59,6 @@ const Login=()=>{
     onChange={(e)=>setPassword(e.target.value)}
     />
  </p>
- <Link to="/password/forgot"><span id="ooops" class="text-right">forgot password?</span></Link>
             <button id="date" disabled={isLoading}><b>{isLoading ? "Processing..." : "Sign In"}</b></button>
        </form>
         </div>

@@ -27,9 +27,6 @@ const UserRoutes=()=>{
         <Route path="/login" element={<Login />}/>
         <Route path="/cart" element={<Cart />}/>
         <Route path="/wishlist" element={<WishList />}/>
-        <Route path="/password/forgot" element={<ForgotPassword />}/>
-        <Route path="/password/reset/:token" element={<ResetPassword />}/>
-        <Route path="/verify" element={<VerifyEmail />}/>
         <Route path="/product/:id" element={<ProductDetail />}/>
         <Route path="/me/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>}/>
         <Route path="/me/update_profile" element={<ProtectedRoute><UpdateProfile /></ProtectedRoute>}/>

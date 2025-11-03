@@ -23,8 +23,8 @@ const Register=()=>{
         if(error){
             toast.error(error?.data?.message)
         }if(isSuccess){
-            toast.success("Code Successfully sended to your email")
-            navigate("/verify");
+            toast.success("Registered Successfully")
+            navigate("/login");
         }
     },[error,navigate,isAuthenticated,isSuccess])
     const submitHandler=(e)=>{
