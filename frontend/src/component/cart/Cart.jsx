@@ -1,11 +1,12 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {useDispatch, useSelector} from 'react-redux';
 import {removeCartItem, setUserCart} from '../redux/features/cartSlice.js';
 
 const Cart=()=>{
     const {cartItems}=useSelector((state)=>state.cart);
     const dispatch=useDispatch();
+    const navigate=useNavigate();
 
         const increaseQty = (item,quantity) => {
     const newQty=quantity+1;
