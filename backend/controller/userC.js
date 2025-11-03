@@ -2,102 +2,30 @@ import User from '../models/userM.js';
 import sendToken from '../utils/token.js';
 import crypto from 'crypto';
 import {sendEmail} from '../utils/sendEmail.js';
-import PendingUser from '../models/PendingUser.js';
-import bcrypt from 'bcrypt';
 import { delete_file, upload_file } from '../utils/cloudinary.js';
-import { getEmailVerificationTemplate } from '../utils/emailVerificationTemplate.js';
 import { getResetPasswordTemplate } from '../utils/emailTemplate.js';
 
-export const registerUser = async (req, res) => {
+export const registerUser = async (req, res, next) => {
   try {
-    const { first, last, email, password } = req.body;
+    const { first,last, email, password } = req.body;
 
-    if (!first || !last || !email || !password) {
-      return res.status(400).json({
-        success: false,
-        message: "All fields are required.",
-      });
-    }
-
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Generate verification code
-    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
-
-    // Remove old pending users
-    await PendingUser.deleteMany({ email });
-
-    // Create pending user
-    await PendingUser.create({
+    const user = await User.create({
       first,
       last,
       email,
-      password: hashedPassword,
-      code: verificationCode,
-      codeExpire: Date.now() + 10 * 60 * 1000, // 10 minutes
+      password
     });
 
-    // Send email via Resend
-    const message = getEmailVerificationTemplate(verificationCode);
-
-    await sendEmail({
-      to: email, // ✅ Resend requires `to`, not `email`
-      subject: "Your Verification Code",
-      html: message, // ✅ Use html instead of message
-    });
-
-    console.log("✅ Email sent successfully to:", email);
-
-    res.status(201).json({
-      success: true,
-      message: "Verification code sent to email.",
-    });
+    sendToken(user, 201, res);
   } catch (err) {
-    console.error("❌ Register error full:", err);
-    res.status(500).json({
-      success: false,
-      message: err.message,
-      stack: err.stack,
-    });
-  }
-};
-
-export const verifyRegistration = async (req, res) => {
-  try {
-    const { code } = req.body;
-
-    const pendingUser = await PendingUser.findOne({
-      code,
-      codeExpire: { $gt: Date.now() },
-    });
-
-    if (!pendingUser) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid or expired verification code",
-      });
+    if (err.name === "ValidationError") {
+      const messages = Object.values(err.errors).map(e => e.message);
+      return res.status(400).json({ message: messages.join(", ") });
     }
-
-    const user = await User.create({
-      first: pendingUser.first,
-      last: pendingUser.last,
-      email: pendingUser.email,
-      password: pendingUser.password,
-    });
-
-    await PendingUser.deleteOne({ _id: pendingUser._id });
-
-    res.status(200).json({
-      success: true,
-      message: "User registered successfully!",
-    });
-  } catch (err) {
-    console.error("❌ Verification error:", err);
-    res.status(500).json({
-      success: false,
-      message: "Verification failed.",
-    });
+  if (err.code === 11000 && err.keyPattern?.email) {
+      return res.status(400).json({ message: "Email already exists" });
+    }
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
 

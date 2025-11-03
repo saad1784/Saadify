@@ -4,12 +4,11 @@ import { deleteUser, forgotPassword, getUser, getUserDetails, getUserProfile, lo
      updateProfile,
      updateUser,
      uploadAvatar,
-     verifyRegistration} from '../controller/userC.js';
+     } from '../controller/userC.js';
 import { authorizedRoles, isAuthenticatedUser } from '../middlewear/authen.js';
 const router =express.Router();
 
 router.route("/register").post(registerUser);
-router.route("/verify-email").post(verifyRegistration);
 router.route("/login").post(loginUser);
 router.route("/logout").get(logOut);
 router.route("/password/forgot").post(forgotPassword);
