@@ -17,10 +17,10 @@ function ScrollToTopAndPixel() {
     window.scrollTo(0, 0);
 
     // Fire PageView on each route change, but only once per session
-    if (window.fbq && !sessionStorage.getItem(`pageviewFired_${location.pathname}`)) {
-      fbq('track', 'PageView');
-      sessionStorage.setItem(`pageviewFired_${location.pathname}`, 'true');
-    }
+   // if (window.fbq && !sessionStorage.getItem(`pageviewFired_${location.pathname}`)) {
+      //fbq('track', 'PageView');
+     // sessionStorage.setItem(`pageviewFired_${location.pathname}`, 'true');
+    //}
   }, [location]);
 
   return null;
