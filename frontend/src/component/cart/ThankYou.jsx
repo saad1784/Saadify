@@ -17,23 +17,21 @@ const ThankYou = () => {
     }
   }, [error]);
 
-  useEffect(() => {
-    if (data?.order && window.fbq) {
-      const order = data.order;
-
-      // Prevent duplicate Purchase events for the same order
-      const purchaseKey = `purchase_${order._id}`;
-      if (!sessionStorage.getItem(purchaseKey)) {
-        window.fbq("track", "Purchase", {
-          content_ids: [order._id],
-          content_type: "product",
-          value: order.totalAmount || 0,
-          currency: "PKR",
-        });
-        sessionStorage.setItem(purchaseKey, "true");
-      }
+ useEffect(() => {
+  if (data?.order && window.fbq) {
+    const order = data.order;
+    const purchaseKey = `purchase_${order._id}`;
+    if (!sessionStorage.getItem(purchaseKey)) {
+      window.fbq("track", "Purchase", {
+        content_ids: [order._id],
+        content_type: "product",
+        value: order.totalAmount || 0,
+        currency: "PKR",
+      });
+      sessionStorage.setItem(purchaseKey, "true");
     }
-  }, [data]);
+  }
+}, [data]);
 
   if (isLoading) return <Loader />;
 

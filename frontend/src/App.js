@@ -9,18 +9,18 @@ import { Toaster } from "react-hot-toast";
 import NotFound from './component/layout/NotFound.jsx';
 import { useEffect } from 'react';
 
+// Fires PageView on every route change (SPA)
 function ScrollToTopAndPixel() {
   const location = useLocation();
 
   useEffect(() => {
-    // Scroll to top on route change
     window.scrollTo(0, 0);
 
-    // Fire PageView on each route change, but only once per session
-   // if (window.fbq && !sessionStorage.getItem(`pageviewFired_${location.pathname}`)) {
-      //fbq('track', 'PageView');
-     // sessionStorage.setItem(`pageviewFired_${location.pathname}`, 'true');
-    //}
+    // Fire PageView only once per route per session
+    if (window.fbq && !sessionStorage.getItem(`pageviewFired_${location.pathname}`)) {
+      fbq('track', 'PageView');
+      sessionStorage.setItem(`pageviewFired_${location.pathname}`, 'true');
+    }
   }, [location]);
 
   return null;
@@ -35,7 +35,9 @@ function App() {
       <div className="App">
         <Toaster position="top-center" />
         <Header />
+
         <ScrollToTopAndPixel />
+
         <div id="align">
           <Routes>
             {userRoutes}
@@ -43,6 +45,7 @@ function App() {
             <Route path="*" element={<NotFound />} />
           </Routes>
         </div>
+
         <Footer />
       </div>
     </Router>
