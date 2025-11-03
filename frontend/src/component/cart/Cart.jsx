@@ -19,8 +19,9 @@ const Cart=()=>{
     setItemToCart(item,newQty);
   };
 const handleCheckoutClick = () => {
-  if (window.fbq) {
+  if (window.fbq && !sessionStorage.getItem("initiateCheckoutFired")) {
     window.fbq('track', 'InitiateCheckout');
+    sessionStorage.setItem("initiateCheckoutFired", "true");
   }
   navigate('/checkout');
 };

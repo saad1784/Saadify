@@ -21,12 +21,17 @@ const ThankYou = () => {
     if (data?.order && window.fbq) {
       const order = data.order;
 
-      window.fbq("track", "Purchase", {
-        content_ids: [order._id],
-        content_type: "product",
-        value: order.totalAmount || 0,
-        currency: "PKR",
-      });
+      // Prevent duplicate Purchase events for the same order
+      const purchaseKey = `purchase_${order._id}`;
+      if (!sessionStorage.getItem(purchaseKey)) {
+        window.fbq("track", "Purchase", {
+          content_ids: [order._id],
+          content_type: "product",
+          value: order.totalAmount || 0,
+          currency: "PKR",
+        });
+        sessionStorage.setItem(purchaseKey, "true");
+      }
     }
   }, [data]);
 

@@ -54,7 +54,8 @@ const ProductDetail = ({ onColorSelect }) => {
     color: selectedColor || null,
     quantity,
   };
-  if (window.fbq) {
+  const productCartKey = `addToCart_${product._id}`;
+  if (window.fbq && !sessionStorage.getItem(productCartKey)) {
     window.fbq("track", "AddToCart", {
       content_ids: [product?._id],
       content_name: product?.name,
@@ -63,11 +64,11 @@ const ProductDetail = ({ onColorSelect }) => {
       currency: "PKR",
       quantity: quantity,
     });
-    dispatch(setUserCart(cartItem));
-    toast.success("Item Added to Cart Successfully");
+    sessionStorage.setItem(productCartKey, "true"); 
   }
+  dispatch(setUserCart(cartItem));
+  toast.success("Item Added to Cart Successfully");
 };
-
 
   if (isLoading) return <Loader />;
 
