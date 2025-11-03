@@ -40,17 +40,6 @@ const ProductItem = ({ product }) => {
     setShowModal(true);
   } else {
     handleAddToCart();
-    const productCartKey = `addToCart_${product._id}`;
-    if (window.fbq && !sessionStorage.getItem(productCartKey)) {
-      window.fbq('track', 'AddToCart', {
-        content_name: product.name,
-        content_ids: [product._id],
-        content_type: 'product',
-        value: product.price,
-        currency: 'PKR',
-      });
-      sessionStorage.setItem(productCartKey, 'true');
-    }
   }
 };
 
