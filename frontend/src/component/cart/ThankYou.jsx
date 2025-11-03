@@ -17,6 +17,19 @@ const ThankYou = () => {
     }
   }, [error]);
 
+  useEffect(() => {
+    if (data?.order && window.fbq) {
+      const order = data.order;
+
+      window.fbq("track", "Purchase", {
+        content_ids: [order._id],
+        content_type: "product",
+        value: order.totalAmount || 0,
+        currency: "PKR",
+      });
+    }
+  }, [data]);
+
   if (isLoading) return <Loader />;
 
   if (!data?.order) {

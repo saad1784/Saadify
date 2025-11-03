@@ -17,7 +17,12 @@ const Cart=()=>{
     if (newQty <= 0) return;
     setItemToCart(item,newQty);
   };
-
+const handleCheckoutClick = () => {
+  if (window.fbq) {
+    window.fbq('track', 'InitiateCheckout');
+  }
+  navigate('/checkout');
+};
   const setItemToCart=(item,newQty)=>{
     const cartItem={
       product:item?.product,
@@ -113,7 +118,7 @@ const Cart=()=>{
                 <p>Subtotal:<span class="s1">
                     <b>{cartItems?.reduce((acc,item)=> acc+ item?.quantity,0)}{""} (units)</b></span></p>
                 <p>Est. total:<span class="s1"><b>Rs {cartItems?.reduce((acc,item)=> acc+ item?.quantity*item.price,0).toFixed(2)}</b></span></p><hr />
-                <Link to="/checkout"><button id="out"><b>Checkout</b></button></Link>
+                <button id="out" onClick={handleCheckoutClick}><b>Checkout</b></button>
               </div>
             </div>
         

@@ -40,24 +40,34 @@ const ProductDetail = ({ onColorSelect }) => {
   };
 
   const setItemToCart = () => {
-    if (product?.color?.length > 0 && !selectedColor) {
-      toast.error("Please select a color");
-      return;
-    }
+  if (product?.color?.length > 0 && !selectedColor) {
+    toast.error("Please select a color");
+    return;
+  }
 
-    const cartItem = {
-      product: product?._id,
-      name: product?.name,
-      price: product?.price,
-      image: product?.images[0]?.url,
-      stock: product?.stock,
-      color: selectedColor || null,
-      quantity
-    };
-
+  const cartItem = {
+    product: product?._id,
+    name: product?.name,
+    price: product?.price,
+    image: product?.images[0]?.url,
+    stock: product?.stock,
+    color: selectedColor || null,
+    quantity,
+  };
+  if (window.fbq) {
+    window.fbq("track", "AddToCart", {
+      content_ids: [product?._id],
+      content_name: product?.name,
+      content_type: "product",
+      value: product?.price || 0,
+      currency: "PKR",
+      quantity: quantity,
+    });
     dispatch(setUserCart(cartItem));
     toast.success("Item Added to Cart Successfully");
-  };
+  }
+};
+
 
   if (isLoading) return <Loader />;
 

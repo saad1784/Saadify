@@ -36,12 +36,21 @@ const ProductItem = ({ product }) => {
   };
 
   const setItemToCart = () => {
-    if (product?.color?.length > 0) {
-      setShowModal(true);
-    } else {
-      handleAddToCart();
+  if (product?.color?.length > 0) {
+    setShowModal(true);
+  } else {
+    handleAddToCart();
+    if (window.fbq) {
+      window.fbq('track', 'AddToCart', {
+        content_name: product.name,
+        content_ids: [product._id],
+        content_type: 'product',
+        value: product.price,
+        currency: 'PKR',
+      });
     }
-  };
+  }
+};
 
   const toggleWishlist = () => {
     if (isInWishlist) {
