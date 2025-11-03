@@ -1,6 +1,6 @@
 /* global fbq */
 import './App.css';
-import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import { Route, BrowserRouter as Router, Routes, useLocation } from "react-router-dom";
 import Header from './component/layout/Header.jsx';
 import Footer from './component/layout/Footer.jsx';
 import useUserRoutes from "./component/routes/UserRoutes.jsx";
@@ -9,35 +9,33 @@ import { Toaster } from "react-hot-toast";
 import NotFound from './component/layout/NotFound.jsx';
 import { useEffect } from 'react';
 
+function ScrollToTopAndPixel() {
+  const location = useLocation();
+
+  useEffect(() => {
+    // Scroll to top on route change
+    window.scrollTo(0, 0);
+
+    // Fire PageView on each route change, but only once per session
+    if (window.fbq && !sessionStorage.getItem(`pageviewFired_${location.pathname}`)) {
+      fbq('track', 'PageView');
+      sessionStorage.setItem(`pageviewFired_${location.pathname}`, 'true');
+    }
+  }, [location]);
+
+  return null;
+}
+
 function App() {
   const userRoutes = useUserRoutes();
   const adminRoutes = useAdminRoutes();
-
-  useEffect(() => {
-    // Fire PageView only once per session
-    if (typeof window !== "undefined" && window.fbq) {
-      if (!sessionStorage.getItem("pageviewFired")) {
-        fbq('track', 'PageView');
-        sessionStorage.setItem("pageviewFired", "true");
-      }
-    }
-
-    // Clear sessionStorage flag when user leaves the website
-    const handleUnload = () => {
-      sessionStorage.removeItem("pageviewFired");
-    };
-    window.addEventListener("beforeunload", handleUnload);
-
-    return () => {
-      window.removeEventListener("beforeunload", handleUnload);
-    };
-  }, []);
 
   return (
     <Router>
       <div className="App">
         <Toaster position="top-center" />
         <Header />
+        <ScrollToTopAndPixel />
         <div id="align">
           <Routes>
             {userRoutes}
