@@ -1,6 +1,5 @@
 /* global fbq */
 import './App.css';
-import React from 'react';
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import Header from './component/layout/Header.jsx';
 import Footer from './component/layout/Footer.jsx';
@@ -48,65 +47,18 @@ function App() {
     };
   }, []);
 
-  // Helper function for AddToCart
-  const trackAddToCart = (product, quantity = 1) => {
-    if (!window.fbq || !product?._id) return;
-
-    const productCartKey = `addToCart_${product._id}`;
-    if (!sessionStorage.getItem(productCartKey)) {
-      fbq("track", "AddToCart", {
-        content_ids: [product._id],
-        content_name: product.name,
-        content_type: "product",
-        value: product.price || 0,
-        currency: "PKR",
-        quantity: quantity,
-      });
-      sessionStorage.setItem(productCartKey, "true");
-    }
-  };
-
-  // Helper function for InitiateCheckout
-  const trackInitiateCheckout = () => {
-    if (!window.fbq) return;
-    if (!sessionStorage.getItem("initiateCheckoutFired")) {
-      fbq('track', 'InitiateCheckout');
-      sessionStorage.setItem("initiateCheckoutFired", "true");
-    }
-  };
-
-  // Helper function for Purchase
-  const trackPurchase = (order) => {
-    if (!window.fbq || !order?._id) return;
-
-    const purchaseKey = `purchase_${order._id}`;
-    if (!sessionStorage.getItem(purchaseKey)) {
-      fbq("track", "Purchase", {
-        content_ids: [order._id],
-        content_type: "product",
-        value: order.totalAmount || 0,
-        currency: "PKR",
-      });
-      sessionStorage.setItem(purchaseKey, "true");
-    }
-  };
-
   return (
     <Router>
       <div className="App">
         <Toaster position="top-center" />
         <Header />
-
         <div id="align">
           <Routes>
-            {userRoutes.map(route =>
-              React.cloneElement(route, { trackAddToCart, trackInitiateCheckout, trackPurchase })
-            )}
-            {adminRoutes.map(route => route)}
+            {userRoutes}
+            {adminRoutes}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </div>
-
         <Footer />
       </div>
     </Router>
