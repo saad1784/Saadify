@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {Link, useNavigate} from 'react-router-dom';
+import {useNavigate} from 'react-router-dom';
 import { useLoginMutation } from "../redux/api/authApi.js";
 import { useSelector } from 'react-redux';
 import Loader from "../layout/Loader.jsx";
