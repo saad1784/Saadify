@@ -16,8 +16,8 @@ const app = express();
 // Middleware
 app.use(cookieParser());
 app.use(cors({
-  origin: 'https://saadify.vercel.app', // your deployed frontend URL
-  credentials: true,                    // allow cookies
+  origin: 'https://saadify.vercel.app', // your frontend URL
+  credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE']
 }));
 app.use(express.json({ limit: '10mb' }));
@@ -40,13 +40,8 @@ if (process.env.NODE_ENV === "PRODUCTION") {
   });
 }
 
-// Health check route
 app.get('/', (req, res) => {
-  res.send('Backend API is live on Railway 🚀');
+  res.send('Backend API is live 🚀');
 });
 
-// Start server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`✅ Server started on port ${PORT}`);
-});
+export default app;
