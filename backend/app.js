@@ -3,7 +3,6 @@ import dotenv from 'dotenv';
 import { connectDatabase } from './config/db.js';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import path from 'path';
 
 // Load env vars
 dotenv.config({ path: './config/config.env' });
@@ -16,7 +15,7 @@ const app = express();
 // Middleware
 app.use(cookieParser());
 app.use(cors({
-  origin: 'https://saadify.vercel.app', // your frontend URL
+  origin: 'https://saadify.vercel.app',
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE']
 }));
@@ -31,17 +30,10 @@ app.use('/api', router);
 app.use('/api', routerP);
 app.use('/api', routerO);
 
-// Serve frontend (only in production)
-const __dirname = path.resolve();
-if (process.env.NODE_ENV === "PRODUCTION") {
-  app.use(express.static(path.join(__dirname, "frontend/build")));
-  app.get("*", (req, res) => {
-    res.sendFile(path.resolve(__dirname, "frontend", "build", "index.html"));
-  });
-}
-
+// Health check route
 app.get('/', (req, res) => {
   res.send('Backend API is live 🚀');
 });
 
+// Export app for Vercel serverless
 export default app;
