@@ -1,39 +1,38 @@
-import express from 'express';
-import dotenv from 'dotenv';
-import { connectDatabase } from './config/db.js';
-import cors from 'cors';
-import cookieParser from 'cookie-parser';
+import express from "express";
+import dotenv from "dotenv";
+import { connectDatabase } from "./config/db.js";
+import cors from "cors";
+import cookieParser from "cookie-parser";
 
-// Load env vars
-dotenv.config({ path: './config/config.env' });
-
-// Connect to DB
-connectDatabase();
+dotenv.config({ path: "./config/config.env" });
 
 const app = express();
 
 // Middleware
 app.use(cookieParser());
 app.use(cors({
-  origin: 'https://saadify.vercel.app',
+  origin: "https://saadify.vercel.app",
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE']
+  methods: ["GET", "POST", "PUT", "DELETE"]
 }));
-app.use(express.json({ limit: '10mb' }));
+app.use(express.json({ limit: "10mb" }));
 
 // Routes
-import router from './routes/userR.js';
-import routerP from './routes/productR.js';
-import routerO from './routes/orderR.js';
+import router from "./routes/userR.js";
+import routerP from "./routes/productR.js";
+import routerO from "./routes/orderR.js";
 
-app.use('/api', router);
-app.use('/api', routerP);
-app.use('/api', routerO);
+app.use("/api", router);
+app.use("/api", routerP);
+app.use("/api", routerO);
 
-// Health check route
-app.get('/', (req, res) => {
-  res.send('Backend API is live 🚀');
+// Health check
+app.get("/", (req, res) => {
+  res.send("Backend API is live 🚀");
 });
 
-// Export app for Vercel serverless
+// Connect to DB
+connectDatabase().catch(err => console.error(err));
+
+// Do NOT call app.listen() here
 export default app;
