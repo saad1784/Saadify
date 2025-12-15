@@ -1,9 +1,7 @@
 import User from '../models/userM.js';
 import sendToken from '../utils/token.js';
 import crypto from 'crypto';
-import {sendEmail} from '../utils/sendEmail.js';
 import { delete_file, upload_file } from '../utils/cloudinary.js';
-import { getResetPasswordTemplate } from '../utils/emailTemplate.js';
 
 export const registerUser = async (req, res, next) => {
   try {
@@ -90,60 +88,7 @@ export const logOut = async (req, res, next) => {
 
 
 
-// Forgot Password
-export const forgotPassword = async (req, res) => {
-  let user;
-  try {
-    const email = req.body.email?.trim().toLowerCase();
-    if (!email) {
-      return res.status(400).json({
-        success: false,
-        message: "Please provide a valid email.",
-      });
-    }
 
-    user = await User.findOne({ email });
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User with this email does not exist.",
-      });
-    }
-
-    // Generate reset token
-    const resetToken = user.getResetPasswordToken();
-    await user.save({ validateBeforeSave: false });
-
-    const resetUrl = `${process.env.FRONTEND_URL || "http://localhost:3000"}/password/reset/${resetToken}`;
-
-    // Simple HTML template
-    const message = getResetPasswordTemplate(user.first,user.last,resetUrl);
-
-    await sendEmail({
-      to: user.email,
-      subject: "Password Recovery - Saadify",
-      html: message,
-    });
-
-    return res.status(200).json({
-      success: true,
-      message: `Password reset email has been sent to ${user.email}`,
-    });
-  } catch (error) {
-    console.error("❌ Forgot password error:", error);
-
-    if (user) {
-      user.resetPasswordToken = undefined;
-      user.resetPasswordExpire = undefined;
-      await user.save({ validateBeforeSave: false });
-    }
-
-    return res.status(500).json({
-      success: false,
-      message: "Email could not be sent. Please try again later.",
-    });
-  }
-};
 
 // Reset Password
 export const resetPassword = async (req, res) => {

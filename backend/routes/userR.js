@@ -1,5 +1,5 @@
 import express from 'express';
-import { deleteUser, forgotPassword, getUser, getUserDetails, getUserProfile, loginUser, logOut, registerUser, resetPassword,
+import { deleteUser, getUser, getUserDetails, getUserProfile, loginUser, logOut, registerUser, resetPassword,
      updatePassword, 
      updateProfile,
      updateUser,
@@ -11,7 +11,6 @@ const router =express.Router();
 router.route("/register").post(registerUser);
 router.route("/login").post(loginUser);
 router.route("/logout").get(logOut);
-router.route("/password/forgot").post(forgotPassword);
 router.route("/password/reset/:token").put(resetPassword);
 router.route("/me").get(isAuthenticatedUser,getUserProfile);
 router.route("/me/update_password").put(isAuthenticatedUser,updatePassword);
