@@ -1,8 +1,14 @@
+// backend/app.js
 import express from "express";
 import dotenv from "dotenv";
-import { connectDatabase } from "./config/db.js";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+
+// Import your routes
+import routerUser from "./routes/userR.js";
+import routerProduct from "./routes/productR.js";
+import routerOrder from "./routes/orderR.js";
+import { connectDatabase } from "./config/db.js";
 
 dotenv.config({ path: "./config/config.env" });
 
@@ -10,21 +16,19 @@ const app = express();
 
 // Middleware
 app.use(cookieParser());
-app.use(cors({
-  origin: "https://saadify.vercel.app",
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE"]
-}));
+app.use(
+  cors({
+    origin: "https://saadify.vercel.app",
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+  })
+);
 app.use(express.json({ limit: "10mb" }));
 
 // Routes
-import router from "./routes/userR.js";
-import routerP from "./routes/productR.js";
-import routerO from "./routes/orderR.js";
-
-app.use("/api", router);
-app.use("/api", routerP);
-app.use("/api", routerO);
+app.use("/api", routerUser);
+app.use("/api", routerProduct);
+app.use("/api", routerOrder);
 
 // Health check
 app.get("/", (req, res) => {
@@ -32,7 +36,7 @@ app.get("/", (req, res) => {
 });
 
 // Connect to DB
-connectDatabase().catch(err => console.error(err));
+connectDatabase().catch((err) => console.error(err));
 
 // Do NOT call app.listen() here
 export default app;
