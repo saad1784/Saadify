@@ -1,5 +1,5 @@
 // backend/api/index.js
-const serverless = require("serverless-http");
-const app = require("../app.js").default;
+import serverless from "serverless-http";
+import app from "../app.js";
 
-module.exports = serverless(app);
+export default serverless(app);
