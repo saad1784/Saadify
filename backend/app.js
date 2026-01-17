@@ -38,5 +38,7 @@ app.get("/", (req, res) => {
 // Connect to DB
 connectDatabase().catch((err) => console.error(err));
 
-// Do NOT call app.listen() here
-export default app;
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
